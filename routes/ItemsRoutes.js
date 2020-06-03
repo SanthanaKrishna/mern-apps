@@ -1,11 +1,13 @@
-const express = require('express');
-const router = express.Router();
+import { Router } from 'express';
 
-const ItemController = require('../controller/ItemController');
+import { auth } from '../middleware/Auth';
+import { getItems, postItem, deleteItem } from '../controller/ItemController';
 
 
-router.get('/', ItemController.getItems);
-router.post('/', ItemController.postItem);
-router.delete('/:id', ItemController.deleteItem);
+const router = Router();
 
-module.exports = router;
+router.get('/', getItems);
+router.post('/', auth, postItem);
+router.delete('/:id', auth, deleteItem);
+
+export default router;

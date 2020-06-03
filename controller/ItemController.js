@@ -1,42 +1,58 @@
-// Item Model
-const Item = require('../models/Item');
+import { Item } from '../models/Item';
 
 
 /**
- * @route['GET'] api/items
+ * @route ['GET'] api/items
  * @description Get All Items
  * @access Public
  */
-const getItems = (req, res) => {
-    Item.find()
-        .sort({ date: -1 })
-        .then(items => res.json(items))
+export const getItems = async (req, res) => {
+    try {
+        const items = await Item.find();
+        if (!items) throw Error('No items');
+        res.status(200).json(items);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
 };
 
 /**
- * @route['POST'] api/items
+ * @route ['POST'] api/items
  * @description create an Item
- * @access Public
+ * @access Private
  */
-const postItem = (req, res) => {
+export const postItem = async (req, res) => {
     const newItem = new Item({
         name: req.body.name
     });
-    newItem.save().then(item => res.json(item));
+    try {
+        const item = await newItem.save();
+        if (!item) throw Error('Something went wrong saving the item');
+
+        res.status(200).json(item);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
 };
 
 
 /**
- * @route['DELETE'] api/items/:id
+ * @route ['DELETE'] api/items/:id
  * @description Delete a Item
- * @access Public
+ * @access Private
  */
-const deleteItem = (req, res) => {
-    Item.findById(req.params.id)
-        .then(item => item.remove().then(() => res.json({ success: true })))
-        .catch(err => res.status(404).json({ success: false }))
-};
+export const deleteItem = async (req, res) => {
+    try {
+        const item = await Item.findById(req.params.id);
+        if (!item) throw Error('No item found');
 
-exports.getItems = getItems;
-exports.postItem = postItem;
-exports.deleteItem = deleteItem;
+        const removed = await item.remove();
+        if (!removed) {
+            throw Error('Something went wrong while trying to delete the item');
+        }
+        res.status(200).json({ success: true });
+
+    } catch (error) {
+        res.status(400).json({ message: error.message, success: false });
+    }
+};
