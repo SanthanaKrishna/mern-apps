@@ -1,0 +1,56 @@
+# mern-apps
+
+let transporter = nodemailer.createTransport({
+host: 'smtp.gamil.com',
+port: 465,
+secure: true,
+auth: {
+user: EMAIL_USER,
+pass: EMAIL_PASS,
+}
+});
+
+        let mailOptions = {
+            from: "Santhana Krishna <>",
+            to: email,
+            subject: 'Account activation link',
+            html: `
+            <h1>Please use the following link to activate you account</h1>
+            <p>${CLIENT_URL}/auth/activate${token}</p>
+            <hr/>
+            <p>This email may contain semsetive information</p>
+            <p>${CLIENT_URL}</p>
+            `
+        };
+
+        let info = await transporter.sendMail(mailOptions);
+        if (!info) {
+            return res.status(400).json({ error: 'info null' + info.messageId })
+        }
+        return res.json({
+            message: { msg: info.messageId, res: info.response }
+        });
+
+        // const transporter = nodemailer.createTransport(sendgridTransport({
+        //     auth: {
+        //         api_key: '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'
+        //     }
+        // }));
+        // let mailOptions = {
+        //     from: 'skdevelop96@gmail.com', // sender address
+        //     to: email, // list of receivers
+        //     subject: 'Account activation link',
+        //     html: `
+        //     <h1>Please use the following link to activate you account</h1>
+        //     <p>${CLIENT_URL}/auth/activate${token}</p>
+        //     <hr/>
+        //     <p>This email may contain semsetive information</p>
+        //     <p>${CLIENT_URL}</p>
+        //     `
+        // }
+        // // send mail with defined transport object
+        // let info = await transporter.sendMail(mailOptions);
+        // if (!info) {
+        //     res.status(400).json({ error: 'email send error' });
+        // }
+        // return res.status(200).json({ message: 'send mail sucess' });
