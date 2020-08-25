@@ -1,5 +1,8 @@
 import jwt from 'jsonwebtoken';
+import expressJwt from 'express-jwt';
+
 import config from '../config';
+import { User } from '../models/User';
 
 const { JWT_SECRET } = config;
 
@@ -21,3 +24,30 @@ export const auth = (req, res, next) => {
         res.status(400).json({ message: 'Token is not valid' });
     }
 };
+
+
+/**
+ * middleware
+ */
+export const requireSignin = expressJwt({
+    secret: JWT_SECRET //req.user._id
+})
+
+
+/**
+ * 
+ */
+export const adminMiddleware = (req, res, next) => {
+    try {
+        const user = User.findById({ _id: req.user._id });
+        if (user.role !== 'admin') throw Error('Admin resource. Access denied');
+
+        req.profile = user;
+        next();
+
+    } catch (error) {
+        res.status(400).json({
+            error: error
+        })
+    }
+}

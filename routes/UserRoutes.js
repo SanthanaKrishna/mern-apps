@@ -1,8 +1,15 @@
 import { Router } from 'express';
-import { getUserDetails } from '../controller/UserController';
+import { readUserDetails, updateUserDetails } from '../controller/UserController';
+
+import { requireSignin, adminMiddleware } from '../middleware/Auth';
 
 const router = Router();
 
-router.post('/', getUserDetails);
+/**
+ * @route /api/user/
+ */
+router.get('/:id', requireSignin, readUserDetails);
+router.put('/update', requireSignin, updateUserDetails);
+router.put('/admin/update', requireSignin, adminMiddleware, updateUserDetails);
 
-export default router;
+export default router;  
